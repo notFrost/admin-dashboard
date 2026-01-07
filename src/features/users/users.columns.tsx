@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import type { User } from "../types/user"; // adjust path to your actual User type
+import type { User } from "../../app/types/user"; // adjust path to your actual User type
 
 export const userColumns: ColumnDef<User>[] = [
   { accessorKey: "name", header: "Name" },

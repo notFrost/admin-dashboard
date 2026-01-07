@@ -26,7 +26,7 @@ const navItems: NavItem[] = [
 
 export default function Sidebar() {
   return (
-    <aside className="h-full w-64 bg-slate-50 border-r border-gray-200 flex flex-col">
+    <aside className="h-full w-64 shrink-0 bg-slate-50 border-r border-gray-200 flex flex-col">
       <div className="p-6 border-b border-gray-200">
         <h1 className="text-xl font-semibold text-gray-900">Admin Portal</h1>
       </div>

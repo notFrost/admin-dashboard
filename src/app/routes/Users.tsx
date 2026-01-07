@@ -28,7 +28,6 @@ export default function Users() {
 
   const rows = data ?? [];
 
-  // IMPORTANT: table hook is called unconditionally
   const table = useReactTable({
     data: rows,
     columns,
@@ -49,8 +48,8 @@ export default function Users() {
         <p className="text-sm text-gray-500">Manage users and statuses</p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-hidden overflow-y-auto rounded-xl border border-gray-200 bg-white">
+        <table className="w-full text-left text-sm min-w-[900px]">
           <thead className="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
