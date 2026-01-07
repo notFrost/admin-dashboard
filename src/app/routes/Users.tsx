@@ -11,16 +11,11 @@ import { useUsers } from "../../features/users/useUsers";
 import { userColumns } from "../../features/users/users.columns";
 import { getPaginationRowModel } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
-
-function TableSkeleton() {
-  return <div>TableSkeleton</div>;
-}
-function ErrorState() {
-  return <div>ErrorState</div>;
-}
-function EmptyState() {
-  return <div>EmptyState</div>;
-}
+import {
+  TableSkeleton,
+  EmptyState,
+  ErrorState,
+} from "../../features/ui/TableStates";
 
 export default function Users() {
   const { data, isLoading, error } = useUsers();
@@ -49,7 +44,8 @@ export default function Users() {
 
   if (isLoading) return <TableSkeleton />;
   if (error) return <ErrorState />;
-  if (!rows.length) return <EmptyState />;
+  if (!rows.length)
+    return <EmptyState title="No users found" message="Try again later." />;
 
   return (
     <div className="space-y-4">
