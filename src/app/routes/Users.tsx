@@ -9,6 +9,8 @@ import {
 
 import { useUsers } from "../../features/users/useUsers";
 import { userColumns } from "../../features/users/users.columns";
+import { getPaginationRowModel } from "@tanstack/react-table";
+import { useNavigate } from "react-router-dom";
 
 function TableSkeleton() {
   return <div>TableSkeleton</div>;
@@ -24,6 +26,12 @@ export default function Users() {
   const { data, isLoading, error } = useUsers();
 
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const navigate = useNavigate();
+
   const columns = useMemo(() => userColumns, []);
 
   const rows = data ?? [];
@@ -31,10 +39,12 @@ export default function Users() {
   const table = useReactTable({
     data: rows,
     columns,
-    state: { sorting },
+    state: { sorting, pagination },
     onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   if (isLoading) return <TableSkeleton />;
@@ -86,7 +96,11 @@ export default function Users() {
 
           <tbody className="divide-y divide-gray-200">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50">
+              <tr
+                key={row.id}
+                onClick={() => navigate(`/users/${row.original.id}`)}
+                className="hover:bg-gray-50 cursor-pointer"
+              >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-4 py-3 text-gray-700">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -96,6 +110,29 @@ export default function Users() {
             ))}
           </tbody>
         </table>
+        <div className="flex items-center justify-between px-4 py-3 border-t text-sm">
+          <span className="text-gray-500">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </span>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
