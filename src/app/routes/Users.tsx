@@ -29,6 +29,7 @@ export default function Users() {
   const [status, setStatus] = useState<
     "all" | "active" | "pending" | "suspended"
   >("all");
+  const [role, setRole] = useState<"all" | "admin" | "support" | "user">("all");
 
   const navigate = useNavigate();
 
@@ -45,10 +46,11 @@ export default function Users() {
 
       const matchesSearch = !q || name.includes(q) || email.includes(q);
       const matchesStatus = status === "all" || u.status === status;
+      const matchesRole = role === "all" || u.role === role;
 
-      return matchesSearch && matchesStatus;
+      return matchesSearch && matchesStatus && matchesRole;
     });
-  }, [rows, search, status]);
+  }, [rows, search, status, role]);
 
   const table = useReactTable({
     data: filteredRows,
@@ -85,6 +87,19 @@ export default function Users() {
             className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-gray-300"
           />
         </div>
+        <div className="w-40">
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value as typeof role)}
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-gray-300"
+          >
+            <option value="all">All roles</option>
+            <option value="admin">Admin</option>
+            <option value="support">Support</option>
+            <option value="user">User</option>
+          </select>
+        </div>
+
         <div className="w-44">
           <select
             value={status}
@@ -106,7 +121,7 @@ export default function Users() {
       ) : filteredRows.length === 0 ? (
         <EmptyState
           title="No users match your filters"
-          message="Try a different search or status."
+          message="Try changing role, status, or search."
         />
       ) : (
         <div className="rounded-xl border border-gray-200 bg-white">
