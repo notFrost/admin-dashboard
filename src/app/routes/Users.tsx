@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -25,14 +25,27 @@ export default function Users() {
     pageIndex: 0,
     pageSize: 10,
   });
+  const [search, setSearch] = useState("");
+
   const navigate = useNavigate();
 
   const columns = useMemo(() => userColumns, []);
 
   const rows = data ?? [];
 
+  const filteredRows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return rows;
+
+    return rows.filter((u) => {
+      return (
+        u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+      );
+    });
+  }, [rows, search]);
+
   const table = useReactTable({
-    data: rows,
+    data: filteredRows,
     columns,
     state: { sorting, pagination },
     onSortingChange: setSorting,
@@ -40,96 +53,128 @@ export default function Users() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    autoResetPageIndex: false,
   });
 
-  if (isLoading) return <TableSkeleton />;
-  if (error) return <ErrorState />;
-  if (!rows.length)
-    return <EmptyState title="No users found" message="Try again later." />;
+  useEffect(() => {
+    const pageCount = Math.max(
+      1,
+      Math.ceil(filteredRows.length / pagination.pageSize)
+    );
+    const maxPageIndex = pageCount - 1;
+
+    if (pagination.pageIndex > maxPageIndex) {
+      setPagination((p) => ({ ...p, pageIndex: maxPageIndex }));
+    }
+  }, [filteredRows.length, pagination.pageIndex, pagination.pageSize]);
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
-        <p className="text-sm text-gray-500">Manage users and statuses</p>
-      </div>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
+          <p className="text-sm text-gray-500">Manage users and statuses</p>
+        </div>
 
-      <div className="overflow-hidden overflow-y-auto rounded-xl border border-gray-200 bg-white">
-        <table className="w-full text-left text-sm min-w-[900px]">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
-            {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id}>
-                {hg.headers.map((header) => {
-                  const canSort = header.column.getCanSort();
-                  const sortDir = header.column.getIsSorted();
-
-                  return (
-                    <th
-                      key={header.id}
-                      className={`px-4 py-3 ${
-                        canSort ? "cursor-pointer select-none" : ""
-                      }`}
-                      onClick={
-                        canSort
-                          ? header.column.getToggleSortingHandler()
-                          : undefined
-                      }
-                    >
-                      <div className="flex items-center gap-2">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {sortDir === "asc" && <span>▲</span>}
-                        {sortDir === "desc" && <span>▼</span>}
-                      </div>
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody className="divide-y divide-gray-200">
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                onClick={() => navigate(`/users/${row.original.id}`)}
-                className="hover:bg-gray-50 cursor-pointer"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-3 text-gray-700">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="flex items-center justify-between px-4 py-3 border-t text-sm">
-          <span className="text-gray-500">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </span>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+        <div className="w-full max-w-sm">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search name or email..."
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-gray-300"
+          />
         </div>
       </div>
+
+      {isLoading ? (
+        <TableSkeleton />
+      ) : error ? (
+        <ErrorState />
+      ) : filteredRows.length === 0 ? (
+        <EmptyState title="No users found" message="Try a different search." />
+      ) : (
+        <div className="rounded-xl border border-gray-200 bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm min-w-[900px]">
+              <thead className="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
+                {table.getHeaderGroups().map((hg) => (
+                  <tr key={hg.id}>
+                    {hg.headers.map((header) => {
+                      const canSort = header.column.getCanSort();
+                      const sortDir = header.column.getIsSorted();
+
+                      return (
+                        <th
+                          key={header.id}
+                          className={`px-4 py-3 ${
+                            canSort ? "cursor-pointer select-none" : ""
+                          }`}
+                          onClick={
+                            canSort
+                              ? header.column.getToggleSortingHandler()
+                              : undefined
+                          }
+                        >
+                          <div className="flex items-center gap-2">
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {sortDir === "asc" && <span>▲</span>}
+                            {sortDir === "desc" && <span>▼</span>}
+                          </div>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+
+              <tbody className="divide-y divide-gray-200">
+                {table.getPaginationRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    onClick={() => navigate(`/users/${row.original.id}`)}
+                    className="hover:bg-gray-50 cursor-pointer"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-3 text-gray-700">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex items-center justify-between px-4 py-3 border-t text-sm">
+            <span className="text-gray-500">
+              Page {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getPageCount()}
+            </span>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
