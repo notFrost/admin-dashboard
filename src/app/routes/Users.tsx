@@ -26,6 +26,9 @@ export default function Users() {
     pageSize: 10,
   });
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<
+    "all" | "active" | "pending" | "suspended"
+  >("all");
 
   const navigate = useNavigate();
 
@@ -35,14 +38,17 @@ export default function Users() {
 
   const filteredRows = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return rows;
 
     return rows.filter((u) => {
-      return (
-        u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
-      );
+      const name = (u.name ?? "").toLowerCase();
+      const email = (u.email ?? "").toLowerCase();
+
+      const matchesSearch = !q || name.includes(q) || email.includes(q);
+      const matchesStatus = status === "all" || u.status === status;
+
+      return matchesSearch && matchesStatus;
     });
-  }, [rows, search]);
+  }, [rows, search, status]);
 
   const table = useReactTable({
     data: filteredRows,
@@ -70,12 +76,7 @@ export default function Users() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
-          <p className="text-sm text-gray-500">Manage users and statuses</p>
-        </div>
-
+      <div className="flex w-full items-center justify-end gap-3">
         <div className="w-full max-w-sm">
           <input
             value={search}
@@ -84,6 +85,18 @@ export default function Users() {
             className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-gray-300"
           />
         </div>
+        <div className="w-44">
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as typeof status)}
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-gray-300"
+          >
+            <option value="all">All statuses</option>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
       </div>
 
       {isLoading ? (
@@ -91,7 +104,10 @@ export default function Users() {
       ) : error ? (
         <ErrorState />
       ) : filteredRows.length === 0 ? (
-        <EmptyState title="No users found" message="Try a different search." />
+        <EmptyState
+          title="No users match your filters"
+          message="Try a different search or status."
+        />
       ) : (
         <div className="rounded-xl border border-gray-200 bg-white">
           <div className="overflow-x-auto">
