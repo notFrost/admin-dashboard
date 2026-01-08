@@ -31,6 +31,9 @@ export default function Users() {
   >("all");
   const [role, setRole] = useState<"all" | "admin" | "support" | "user">("all");
 
+  const hasActiveFilters =
+    search.trim().length > 0 || status !== "all" || role !== "all";
+
   const navigate = useNavigate();
 
   const columns = useMemo(() => userColumns, []);
@@ -112,6 +115,27 @@ export default function Users() {
             <option value="suspended">Suspended</option>
           </select>
         </div>
+        <button
+          type="button"
+          disabled={!hasActiveFilters}
+          onClick={() => {
+            setSearch("");
+            setStatus("all");
+            setRole("all");
+          }}
+          className={`
+    inline-flex items-center justify-center
+    rounded-lg border px-3 py-2 text-sm
+    transition
+    ${
+      hasActiveFilters
+        ? "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+        : "cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300"
+    }
+  `}
+        >
+          Clear
+        </button>
       </div>
 
       {isLoading ? (
@@ -120,8 +144,14 @@ export default function Users() {
         <ErrorState />
       ) : filteredRows.length === 0 ? (
         <EmptyState
-          title="No users match your filters"
-          message="Try changing role, status, or search."
+          title={
+            hasActiveFilters ? "No users match your filters" : "No users found"
+          }
+          message={
+            hasActiveFilters
+              ? "Try changing role, status, or search."
+              : "Check back later."
+          }
         />
       ) : (
         <div className="rounded-xl border border-gray-200 bg-white">
@@ -186,6 +216,10 @@ export default function Users() {
               Page {table.getState().pagination.pageIndex + 1} of{" "}
               {table.getPageCount()}
             </span>
+            <p className="text-sm text-gray-500 ">
+              Showing {filteredRows.length} user
+              {filteredRows.length === 1 ? "" : "s"}
+            </p>
 
             <div className="flex gap-2">
               <button
