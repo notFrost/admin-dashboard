@@ -1,10 +1,10 @@
-# Admin Dashboard (Project 1)
+# Admin Dashboard
 
 A data-heavy admin dashboard demo built with React + TypeScript. Focused on real-world table UX: sorting, pagination, filters, empty/loading/error states, and detail navigation.
 
 ## Live Demo
-- Demo: <ADD_DEPLOY_LINK_AFTER_DAY_5>
-- Repo: (this repository)
+- Demo: <DEPLOY_LINK>
+- Repo: https://github.com/notFrost/admin-dashboard/
 
 ## Features
 ### Users
