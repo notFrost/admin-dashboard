@@ -16,7 +16,6 @@ import {
   EmptyState,
   ErrorState,
 } from "../../features/ui/TableStates";
-import type { User } from "../types/user";
 
 export default function Users() {
   const { data, isLoading, error } = useUsers();
