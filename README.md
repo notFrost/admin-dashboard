@@ -1,26 +1,36 @@
-# Admin Dashboard (React + TypeScript)
+# Admin Dashboard
 
-A data-heavy internal operations dashboard focused on real-world UI patterns: routing, layout, async data, and (next) table-heavy workflows (sorting, filtering, pagination, and robust UI states).
+A data-heavy admin dashboard demo built with React + TypeScript. Focused on real-world table UX: sorting, pagination, filters, empty/loading/error states, and detail navigation.
 
-## Features (current)
-- App layout: sidebar + topbar
-- Client-side routing (React Router)
-- Mocked users dataset with realistic fields and dates
-- Data access pattern ready for TanStack Query
+## Live Demo
+- Demo: <DEPLOY_LINK>
+- Repo: https://github.com/notFrost/admin-dashboard/
 
-## Planned (next)
-- Users table: sorting, filtering, global search, pagination
-- Loading / empty / error states
-- User detail view with editable fields + validation
-- Deployment
+## Features
+### Users
+- Users table with:
+  - Sorting
+  - Pagination
+  - Global search (name/email)
+  - Status + role filters
+  - Clear filters
+  - Loading, empty, and error states
+- User detail page
+- Stable pagination behavior while filtering
 
-## Tech
-- React + TypeScript (Vite)
+### Layout
+- Sidebar + topbar layout
+- Scroll behavior designed for admin UIs (page scroll, table horizontal scroll)
+
+## Tech Stack
+- React + TypeScript
 - React Router
+- TanStack Query
+- TanStack Table
 - Tailwind CSS
-- TanStack Query (data fetching pattern)
+- Vite
 
-## Getting started
+## Getting Started
 ```bash
 npm install
 npm run dev
