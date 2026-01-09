@@ -16,6 +16,7 @@ import {
   EmptyState,
   ErrorState,
 } from "../../features/ui/TableStates";
+import type { User } from "../types/user";
 
 export default function Users() {
   const { data, isLoading, error } = useUsers();
@@ -55,6 +56,7 @@ export default function Users() {
     });
   }, [rows, search, status, role]);
 
+  console.log(filteredRows[0]);
   const table = useReactTable({
     data: filteredRows,
     columns,
@@ -154,7 +156,7 @@ export default function Users() {
           }
         />
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white">
+        <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm min-w-[900px]">
               <thead className="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -216,7 +218,7 @@ export default function Users() {
               Page {table.getState().pagination.pageIndex + 1} of{" "}
               {table.getPageCount()}
             </span>
-            <p className="text-sm text-gray-500 ">
+            <p className="text-sm text-gray-500">
               Showing {filteredRows.length} user
               {filteredRows.length === 1 ? "" : "s"}
             </p>
