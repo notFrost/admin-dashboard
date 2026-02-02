@@ -1,4 +1,4 @@
-import type { User, UserStatus } from "../types/user";
+import type { User, UserStatus } from "../../features/users/users.types";
 
 const firstNames = [
   "Alex",

@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import type { User } from "../../app/types/user"; // adjust path to your actual User type
+import type { User } from "./users.types";
 import { formatDate } from "../../app/lib/formatDate";
 
 export const userColumns: ColumnDef<User>[] = [

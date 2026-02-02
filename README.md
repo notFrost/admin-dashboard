@@ -33,3 +33,5 @@ A data-heavy admin dashboard demo built with React + TypeScript. Focused on real
 ```bash
 npm install
 npm run dev
+npm run build
+npm run preview
