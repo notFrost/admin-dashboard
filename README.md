@@ -4,7 +4,6 @@ A data-heavy admin dashboard demo built with React + TypeScript. Focused on real
 
 ## Live Demo
 - Demo: https://admin-dashboard-theta-beige-70.vercel.app
-- Repo: https://github.com/notFrost/admin-dashboard/
 
 ## Features
 ### Users
